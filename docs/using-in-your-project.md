@@ -33,8 +33,8 @@ cmake -S . -B build -DCMAKE_PREFIX_PATH=/opt/realtime-hjb
 
 ## Source in your tree
 
-Add the repository as a subdirectory (for example a git submodule). Examples,
-tests and tools are off by default in this mode.
+Add the repository as a subdirectory (for example a git submodule). Examples
+and tests are off by default in this mode.
 
 ```cmake
 add_subdirectory(third_party/realtime-hjb)
@@ -47,7 +47,7 @@ target_link_libraries(my_planner PRIVATE RealtimeHJB::hjb)
 include(FetchContent)
 FetchContent_Declare(realtime_hjb
     GIT_REPOSITORY https://github.com/MirrorAI-corp/realtime-hjb.git
-    GIT_TAG main)
+    GIT_TAG v0.1.0)
 FetchContent_MakeAvailable(realtime_hjb)
 target_link_libraries(my_planner PRIVATE RealtimeHJB::hjb)
 ```

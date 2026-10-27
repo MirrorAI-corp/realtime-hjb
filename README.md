@@ -101,8 +101,12 @@ The container image has the library, the examples and the tests on the CUDA
 
 ```bash
 docker run --rm --gpus all ghcr.io/mirrorai-corp/realtime-hjb            # runs the tests
-docker run --rm --gpus all ghcr.io/mirrorai-corp/realtime-hjb air3d_brt
+docker run --rm --gpus all --user "$(id -u):$(id -g)" -v "$PWD":/work \
+    ghcr.io/mirrorai-corp/realtime-hjb air3d_brt                         # writes ./air3d_V.npy
 ```
+
+The examples write into the working directory, `/work`. Mount a directory
+there and pass `--user` so the files belong to you rather than root.
 
 ## Documentation
 

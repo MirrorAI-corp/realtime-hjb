@@ -14,7 +14,7 @@
 ///
 /// Usage: fleet_sim [out_dir]        (default: ./wildfire_fleet)
 /// Output: one binary frame per simulated second and run_summary.json in
-/// out_dir.
+/// out_dir. examples/wildfire/plot_frame.py draws the frames.
 
 #include "hjb/core/grid.hpp"
 #include "hjb/core/array_nd.hpp"
@@ -313,9 +313,9 @@ static std::vector<std::uint16_t> smoothLabels3x3(
 //     float64 t
 //   labels: uint8[Nx*Ny]  (drone id, or 0xFF for unlabeled)
 //   wind:   float32[Nx*Ny] for fx, then float32[Nx*Ny] for fy
-//   drones (v1): per-drone {float64 x, y, home_x, home_y; uint8 status; int8 fire}
-//   drones (v2): per-drone {float64 x, y, home_x, home_y, predicted_arrival_t; uint8 status; int8 fire}
-//   fires:        per-fire {float64 x, y, t_appear, t_dispatched, t_suppressed; uint8 state; int8 drone}
+//   drones: per-drone {float64 x, y, home_x, home_y, predicted_arrival_t; uint8 status; int8 fire}
+//   fires:  per-fire {float64 x, y, t_appear, t_dispatched, t_suppressed; uint8 state; int8 drone}
+// Grids are row-major with x as the slow index: cell (i, j) is at i*Ny + j.
 // --------------------------------------------------------------------------
 static void writeFrame(const fs::path& path, double t,
                        int Nx, int Ny,
@@ -324,7 +324,7 @@ static void writeFrame(const fs::path& path, double t,
                        const std::vector<Drone>& drones,
                        const std::vector<Fire>& fires) {
     std::ofstream of(path, std::ios::binary);
-    std::uint32_t magic = 0x57464C54u, version = 2u;
+    std::uint32_t magic = 0x57464C54u, version = 2u;  // version 2: drones carry predicted_arrival_t
     std::int32_t  iNx = Nx, iNy = Ny;
     std::int32_t  K = int(drones.size()), F = int(fires.size());
     of.write(reinterpret_cast<const char*>(&magic),   4);

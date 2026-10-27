@@ -27,4 +27,13 @@ within a 10-minute horizon.
 
 It writes one frame per simulated second (about 310 MB) and `run_summary.json`
 with the mean solve time per tick (4.0 ms on an RTX 4000 Ada, 9.7 ms on a
-Jetson AGX Thor) and the number of fires suppressed.
+Jetson AGX Thor) and the number of fires suppressed. To draw frames (needs
+numpy and matplotlib):
+
+```bash
+python examples/wildfire/plot_frame.py out_dir/frame_00300.bin
+```
+
+Each frame holds the time, the drone label of every grid cell, the wind field,
+and the position and state of every drone and fire. The layout is documented
+above `writeFrame` in `fleet_sim.cpp`.
