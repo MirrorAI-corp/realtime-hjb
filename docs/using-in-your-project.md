@@ -47,7 +47,7 @@ target_link_libraries(my_planner PRIVATE RealtimeHJB::hjb)
 include(FetchContent)
 FetchContent_Declare(realtime_hjb
     GIT_REPOSITORY https://github.com/MirrorAI-corp/realtime-hjb.git
-    GIT_TAG v0.1.0)
+    GIT_TAG v0.1.1)
 FetchContent_MakeAvailable(realtime_hjb)
 target_link_libraries(my_planner PRIVATE RealtimeHJB::hjb)
 ```
