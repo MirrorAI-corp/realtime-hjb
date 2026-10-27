@@ -1,0 +1,30 @@
+name: Bug report
+description: A wrong result, a crash or a build failure
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected and what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Smallest program that shows it
+      render: cpp
+  - type: input
+    id: version
+    attributes:
+      label: RealtimeHJB version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU, driver and CUDA version
+      placeholder: "RTX 4000 Ada, driver 580, CUDA 13.2"
+    validations:
+      required: true

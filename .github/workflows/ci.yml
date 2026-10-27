@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mirror AI, Corp.
+
+# Builds the library, examples and tests with CUDA 12 and 13 on x86_64 and
+# arm64, then builds a small program against the installed package.
+# GitHub-hosted runners have no GPU, so the tests are built but not run.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: CUDA ${{ matrix.cuda }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    container: nvidia/cuda:${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cuda: "12.8"
+            arch: x86_64
+            runner: ubuntu-24.04
+            image: 12.8.1-devel-ubuntu22.04@sha256:a99a1860ba8e2916e5c3e73b72ec4c4301653a84586e05bfc9a2aa2d58027e97
+            gpus: 75-real;89-real
+          - cuda: "13.2"
+            arch: x86_64
+            runner: ubuntu-24.04
+            image: 13.2.0-devel-ubuntu24.04@sha256:f9492f2eea77fbc3d0c14fa8738f35946b42da72917bf5959d284ca39b4f209a
+            gpus: 75-real;89-real
+          - cuda: "13.2"
+            arch: arm64
+            runner: ubuntu-24.04-arm
+            image: 13.2.0-devel-ubuntu24.04@sha256:f9492f2eea77fbc3d0c14fa8738f35946b42da72917bf5959d284ca39b4f209a
+            gpus: 110-real
+    steps:
+      - name: Install build tools
+        run: apt-get update && apt-get install -y --no-install-recommends cmake git
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CUDA_ARCHITECTURES=${{ matrix.gpus }}" -DCMAKE_INSTALL_PREFIX="$PWD/install"
+
+      - name: Build
+        run: cmake --build build -j "$(nproc)"
+
+      - name: Install
+        run: cmake --install build
+
+      - name: Build a consumer with find_package
+        run: |
+          cmake -S tests/consumer -B build-consumer -DCMAKE_PREFIX_PATH="$PWD/install"
+          cmake --build build-consumer -j "$(nproc)"

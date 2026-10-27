@@ -1,0 +1,107 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Mirror AI, Corp.
+
+# On a version tag (v1.2.3): builds the static library for each platform,
+# packages it with the headers and CMake config, attests the build provenance
+# and publishes a GitHub release with the notes from CHANGELOG.md.
+name: Release
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    container: nvidia/cuda:${{ matrix.image }}
+    timeout-minutes: 60
+    strategy:
+      matrix:
+        include:
+          - platform: linux-x86_64-cuda12
+            runner: ubuntu-24.04
+            image: 12.8.1-devel-ubuntu22.04@sha256:a99a1860ba8e2916e5c3e73b72ec4c4301653a84586e05bfc9a2aa2d58027e97
+            gpus: 75-real;80-real;86-real;89-real;90-real;100-real;120-real;120-virtual
+          - platform: linux-x86_64-cuda13
+            runner: ubuntu-24.04
+            image: 13.2.0-devel-ubuntu24.04@sha256:f9492f2eea77fbc3d0c14fa8738f35946b42da72917bf5959d284ca39b4f209a
+            gpus: 75-real;80-real;86-real;89-real;90-real;100-real;120-real;120-virtual
+          - platform: linux-aarch64-cuda13
+            runner: ubuntu-24.04-arm
+            image: 13.2.0-devel-ubuntu24.04@sha256:f9492f2eea77fbc3d0c14fa8738f35946b42da72917bf5959d284ca39b4f209a
+            gpus: 90-real;100-real;110-real;121-real;121-virtual
+    steps:
+      - name: Install build tools
+        run: apt-get update && apt-get install -y --no-install-recommends cmake git
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check the tag matches the project version
+        run: |
+          version=$(sed -n 's/^project(RealtimeHJB VERSION \([0-9.]*\).*/\1/p' CMakeLists.txt)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "tag $GITHUB_REF_NAME does not match CMakeLists.txt version $version"; exit 1; }
+
+      - name: Build and package
+        env:
+          GPUS: ${{ matrix.gpus }}
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          pkg="realtime-hjb-${GITHUB_REF_NAME#v}-$PLATFORM"
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CUDA_ARCHITECTURES=$GPUS" \
+                -DHJB_BUILD_EXAMPLES=OFF -DHJB_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX="$PWD/$pkg"
+          cmake --build build -j "$(nproc)"
+          cmake --install build
+          echo "CUDA architectures: $GPUS" > "$pkg/BUILD_INFO.txt"
+          nvcc --version | tail -1 >> "$pkg/BUILD_INFO.txt"
+          mkdir dist
+          tar -czf "dist/$pkg.tar.gz" "$pkg"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ matrix.platform }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Source archive and checksums
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          git archive --format=tar.gz --prefix="realtime-hjb-$version/" -o "dist/realtime-hjb-$version-src.tar.gz" HEAD
+          cd dist && sha256sum *.tar.gz > SHA256SUMS
+
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/*.tar.gz
+
+      - name: Release notes
+        run: |
+          version=${GITHUB_REF_NAME#v}
+          awk -v v="$version" '$0 ~ "^## \\[?"v"\\]?" {on=1; next} on && /^## / {exit} on' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "no CHANGELOG.md section for $version"; exit 1; }
+
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --repo "$GITHUB_REPOSITORY" --title "RealtimeHJB ${GITHUB_REF_NAME#v}" --notes-file notes.md --verify-tag

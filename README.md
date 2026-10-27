@@ -1,5 +1,11 @@
 # RealtimeHJB
 
+[![CI](https://github.com/MirrorAI-corp/realtime-hjb/actions/workflows/ci.yml/badge.svg)](https://github.com/MirrorAI-corp/realtime-hjb/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/MirrorAI-corp/realtime-hjb/actions/workflows/codeql.yml/badge.svg)](https://github.com/MirrorAI-corp/realtime-hjb/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/MirrorAI-corp/realtime-hjb/badge)](https://scorecard.dev/viewer/?uri=github.com/MirrorAI-corp/realtime-hjb)
+[![Release](https://img.shields.io/github/v/release/MirrorAI-corp/realtime-hjb)](https://github.com/MirrorAI-corp/realtime-hjb/releases/latest)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+
 RealtimeHJB is a CUDA library for Hamilton-Jacobi reachability on a grid. It
 computes backward reachable tubes and minimum time-to-reach maps for 2D, 3D
 and 4D systems in milliseconds on one GPU, fast enough to recompute them inside
@@ -78,6 +84,18 @@ int main() {
 }
 ```
 
+## Prebuilt libraries
+
+Each [release](https://github.com/MirrorAI-corp/realtime-hjb/releases) has the
+static library, headers and CMake config for Linux x86_64 (CUDA 12 and 13) and
+aarch64 (CUDA 13, including Jetson AGX Thor). Unpack one and point
+`CMAKE_PREFIX_PATH` at it; `BUILD_INFO.txt` lists the GPU architectures it
+contains. Every archive carries a build provenance attestation:
+
+```bash
+gh attestation verify realtime-hjb-0.1.0-linux-x86_64-cuda13.tar.gz --repo MirrorAI-corp/realtime-hjb
+```
+
 ## Documentation
 
 - [Getting started](docs/getting-started.md): build, run the examples, write your first solve.
@@ -101,6 +119,12 @@ If you use RealtimeHJB in your research, please cite:
 K. Weekly and A. M. Bayen, "Online Hamilton-Jacobi Reachability Onboard the
 Robot Control Loop: A Real-Time GPU Solver for Safety-Critical Autonomy,"
 2026.
+
+## Contributing and security
+
+Issues are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md) for how changes are
+made. Report security problems privately as described in
+[SECURITY.md](SECURITY.md).
 
 ## License
 

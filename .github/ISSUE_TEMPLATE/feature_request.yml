@@ -1,0 +1,11 @@
+name: Feature request
+description: A new solver, option or platform
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What you need
+      description: The problem you are solving, the dynamics, grid size and rate you need.
+    validations:
+      required: true
