@@ -19,6 +19,8 @@ RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release "-DCMAKE_CUDA_ARCHITECTURES=$
 FROM nvidia/cuda:13.2.0-runtime-ubuntu24.04@sha256:7fada70c5ed1b85cb3c15b53f51300fdacff1c31466a20e4f2b29ad952fd63a2
 COPY --from=build /opt/realtime-hjb /opt/realtime-hjb
 ENV PATH=/opt/realtime-hjb/bin:$PATH
+# Writable by any user, so the examples also run with --user and no mount.
+RUN mkdir -p /work && chmod 1777 /work
 LABEL org.opencontainers.image.source="https://github.com/MirrorAI-corp/realtime-hjb" \
       org.opencontainers.image.description="RealtimeHJB: GPU Hamilton-Jacobi reachability, with examples and tests" \
       org.opencontainers.image.licenses="Apache-2.0"

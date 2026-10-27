@@ -3,6 +3,15 @@
 Versions follow [Semantic Versioning](https://semver.org/). Until 1.0 the API
 can change between minor versions.
 
+## [Unreleased]
+
+- `examples/wildfire/plot_frame.py` draws `fleet_sim` frames; the frame layout
+  is documented in `fleet_sim.cpp`.
+- The container image's working directory is writable by any user, so the
+  examples run with `docker run --user`.
+- Docs: mount and `--user` for the container examples; FetchContent pins
+  `v0.1.0`.
+
 ## [0.1.0] - 2026-10-27
 
 First public release.
