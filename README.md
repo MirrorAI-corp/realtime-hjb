@@ -93,7 +93,7 @@ aarch64 (CUDA 13, including Jetson AGX Thor). Unpack one and point
 contains. Every archive carries a build provenance attestation:
 
 ```bash
-gh attestation verify realtime-hjb-0.1.0-linux-x86_64-cuda13.tar.gz --repo MirrorAI-corp/realtime-hjb
+gh attestation verify realtime-hjb-0.1.1-linux-x86_64-cuda13.tar.gz --repo MirrorAI-corp/realtime-hjb
 ```
 
 The container image has the library, the examples and the tests on the CUDA
