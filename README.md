@@ -84,7 +84,7 @@ int main() {
 }
 ```
 
-## Prebuilt libraries
+## Prebuilt libraries and container image
 
 Each [release](https://github.com/MirrorAI-corp/realtime-hjb/releases) has the
 static library, headers and CMake config for Linux x86_64 (CUDA 12 and 13) and
@@ -94,6 +94,14 @@ contains. Every archive carries a build provenance attestation:
 
 ```bash
 gh attestation verify realtime-hjb-0.1.0-linux-x86_64-cuda13.tar.gz --repo MirrorAI-corp/realtime-hjb
+```
+
+The container image has the library, the examples and the tests on the CUDA
+13.2 runtime, for x86_64 and arm64:
+
+```bash
+docker run --rm --gpus all ghcr.io/mirrorai-corp/realtime-hjb            # runs the tests
+docker run --rm --gpus all ghcr.io/mirrorai-corp/realtime-hjb air3d_brt
 ```
 
 ## Documentation
@@ -111,6 +119,7 @@ gh attestation verify realtime-hjb-0.1.0-linux-x86_64-cuda13.tar.gz --repo Mirro
 | `include/hjb/`, `src/` | the library |
 | `examples/` | small programs that each solve one problem, plus a closed-loop wildfire-fleet simulation |
 | `tests/` | regression and analytic tests (`ctest`) |
+| `fuzz/` | libFuzzer targets for the host-side code, run by ClusterFuzzLite |
 
 ## Citing
 

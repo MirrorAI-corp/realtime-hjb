@@ -12,9 +12,9 @@ program that shows the problem.
 
 ## Pull requests
 
-We do not accept unsolicited pull requests. If you want to change the code,
-open an issue first and describe the change. If a maintainer asks you for a
-pull request, it must:
+Only collaborators can open pull requests. If you want to change the code,
+open an issue and describe the change; if it is accepted, a maintainer makes
+it or adds you as a collaborator for it. A pull request must:
 
 - build with `cmake --build build` and pass `ctest --test-dir build` on a GPU;
 - add a test for new behavior;

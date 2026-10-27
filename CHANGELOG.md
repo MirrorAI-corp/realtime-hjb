@@ -19,3 +19,7 @@ First public release.
   wildfire-response simulation with six drones.
 - Prebuilt static libraries for Linux x86_64 (CUDA 12 and 13) and aarch64
   (CUDA 13, including Jetson AGX Thor).
+- Container image `ghcr.io/mirrorai-corp/realtime-hjb` with the examples and
+  tests, for x86_64 and arm64.
+- `Grid::create` and `writeNpy` reject invalid arguments with
+  `std::invalid_argument`.
