@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstring>
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -64,6 +65,24 @@ void testGrid() {
     }
     ok = ok && std::fabs(g.coord(0, 10) - 1.0) < 1e-12 && std::fabs(g.dx[2] - 2 * M_PI / 16) < 1e-12;
     check("grid indexing and spacing", ok, "periodic dx = span / N, others span / (N - 1)");
+}
+
+template <typename Fn>
+bool throwsInvalid(Fn fn) {
+    try { fn(); } catch (const std::invalid_argument&) { return true; }
+    return false;
+}
+
+void testInvalidInput() {
+    auto grid = [](int dim, double lo, double hi, int n) {
+        return [=] { hjb::Grid::create(dim, {lo, lo, lo, lo}, {hi, hi, hi, hi}, {n, n, n, n}, {E, E, E, E}); };
+    };
+    bool ok = throwsInvalid(grid(0, -1, 1, 11)) && throwsInvalid(grid(5, -1, 1, 11)) &&
+              throwsInvalid(grid(2, 1, -1, 11)) && throwsInvalid(grid(2, -1, 1, 1)) &&
+              throwsInvalid(grid(2, -1, 1, 0)) && throwsInvalid(grid(4, -1, 1, 300)) &&
+              throwsInvalid(grid(2, -1, INFINITY, 11)) &&
+              throwsInvalid([] { hjb::writeNpy("/dev/null", nullptr, {3, -1}); });
+    check("invalid input rejected", ok, "bad grid arguments and negative .npy shapes throw");
 }
 
 void testShapes() {
@@ -180,6 +199,7 @@ int main(int argc, char** argv) {
     struct T { const char* name; std::function<void()> fn; };
     std::vector<T> tests = {
         {"grid", testGrid},
+        {"invalid_input", testInvalidInput},
         {"shapes", testShapes},
         {"holonomic", testHolonomicTTR},
         {"drifter", testDrifterTTR},

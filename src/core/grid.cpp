@@ -3,6 +3,10 @@
 
 #include "hjb/core/grid.hpp"
 
+#include <climits>
+#include <cmath>
+#include <stdexcept>
+
 namespace hjb {
 
 Grid Grid::create(int dim,
@@ -10,6 +14,20 @@ Grid Grid::create(int dim,
                   const std::array<double, kMaxDim>& gmax,
                   const std::array<int, kMaxDim>& gN,
                   const std::array<BoundaryType, kMaxDim>& gbdry) {
+    if (dim < 1 || dim > kMaxDim)
+        throw std::invalid_argument("Grid::create: dim must be between 1 and 4");
+    long long total = 1;
+    for (int d = 0; d < dim; d++) {
+        if (!std::isfinite(gmin[d]) || !std::isfinite(gmax[d]) || !(gmin[d] < gmax[d]) ||
+            !std::isfinite(gmax[d] - gmin[d]))
+            throw std::invalid_argument("Grid::create: need finite min < max in every dimension");
+        if (gN[d] < 2)
+            throw std::invalid_argument("Grid::create: need at least 2 points in every dimension");
+        total *= gN[d];
+        if (total > INT_MAX)
+            throw std::invalid_argument("Grid::create: more than 2^31 - 1 grid points");
+    }
+
     Grid g;
     g.dim = dim;
     g.min = gmin;

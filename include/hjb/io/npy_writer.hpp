@@ -11,7 +11,8 @@ namespace hjb {
 
 /// Write a row-major float64 N-D array to NumPy .npy v1.0 format.
 /// Shape is given as a vector of dimension sizes; data length must equal
-/// the product of the shape entries.
+/// the product of the shape entries. Throws std::invalid_argument for a
+/// negative dimension and std::runtime_error if the file cannot be written.
 void writeNpy(const std::string& path,
               const double* data,
               const std::vector<int>& shape);

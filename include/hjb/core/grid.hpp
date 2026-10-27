@@ -23,7 +23,9 @@ struct Grid {
     /// Coordinate arrays: xs[d] has total_points entries
     std::vector<std::vector<double>> xs;
 
-    /// Create a grid
+    /// Create a grid. Throws std::invalid_argument unless 1 <= dim <= 4 and,
+    /// in every dimension, min < max (both finite) and N >= 2, with at most
+    /// 2^31 - 1 points in total.
     static Grid create(int dim,
                        const std::array<double, kMaxDim>& gmin,
                        const std::array<double, kMaxDim>& gmax,
