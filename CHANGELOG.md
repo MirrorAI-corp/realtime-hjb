@@ -3,7 +3,7 @@
 Versions follow [Semantic Versioning](https://semver.org/). Until 1.0 the API
 can change between minor versions.
 
-## [Unreleased]
+## [0.1.2] - 2026-11-04
 
 - The paper is on arXiv: [arXiv:2611.04096](https://arxiv.org/abs/2611.04096).
   The README has the citation and BibTeX; `CITATION.cff` enables GitHub's
