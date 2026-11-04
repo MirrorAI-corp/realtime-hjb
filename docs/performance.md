@@ -3,7 +3,9 @@
 All timings are for one solve of the full horizon, measured on the host
 around the library call (including the copies to and from the GPU), after one
 untimed warm-up solve in the same process. Each number is the median of
-repeated runs.
+repeated runs. The benchmark problems, the comparison with hj_reachability and
+the measurement procedure are described in the paper,
+[arXiv:2611.04096](https://arxiv.org/abs/2611.04096).
 
 Desktop: NVIDIA RTX 4000 Ada Generation (20 GB), CUDA 13.2.
 Embedded: NVIDIA Jetson AGX Thor developer kit, 120 W mode.

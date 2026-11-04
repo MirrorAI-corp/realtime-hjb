@@ -5,6 +5,7 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/MirrorAI-corp/realtime-hjb/badge)](https://scorecard.dev/viewer/?uri=github.com/MirrorAI-corp/realtime-hjb)
 [![Release](https://img.shields.io/github/v/release/MirrorAI-corp/realtime-hjb)](https://github.com/MirrorAI-corp/realtime-hjb/releases/latest)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![arXiv](https://img.shields.io/badge/arXiv-2611.04096-b31b1b)](https://arxiv.org/abs/2611.04096)
 
 RealtimeHJB is a CUDA library for Hamilton-Jacobi reachability on a grid. It
 computes backward reachable tubes and minimum time-to-reach maps for 2D, 3D
@@ -15,7 +16,9 @@ It uses the standard level-set scheme of Mitchell's ToolboxLS and the JAX
 library [hj_reachability](https://github.com/StanfordASL/hj_reachability):
 fifth-order WENO in space, third-order TVD Runge-Kutta in time and
 Lax-Friedrichs dissipation. Results agree with hj_reachability to within the
-discretization error (see [docs/performance.md](docs/performance.md)).
+discretization error (see [docs/performance.md](docs/performance.md)). The
+solver design and its evaluation are described in
+[arXiv:2611.04096](https://arxiv.org/abs/2611.04096).
 
 | Problem | Grid | Time on an RTX 4000 Ada (FP32) |
 |---|---|---|
@@ -127,11 +130,27 @@ there and pass `--user` so the files belong to you rather than root.
 
 ## Citing
 
-If you use RealtimeHJB in your research, please cite:
+If you use RealtimeHJB in your research, please cite the paper:
 
 K. Weekly and A. M. Bayen, "Online Hamilton-Jacobi Reachability Onboard the
 Robot Control Loop: A Real-Time GPU Solver for Safety-Critical Autonomy,"
-2026.
+arXiv:2611.04096, 2026. <https://arxiv.org/abs/2611.04096>
+
+```bibtex
+@misc{weekly2026realtimehjb,
+  title         = {Online Hamilton-Jacobi Reachability Onboard the Robot Control Loop:
+                   A Real-Time GPU Solver for Safety-Critical Autonomy},
+  author        = {Kevin Weekly and Alexandre M. Bayen},
+  year          = {2026},
+  eprint        = {2611.04096},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.RO},
+  url           = {https://arxiv.org/abs/2611.04096}
+}
+```
+
+[CITATION.cff](CITATION.cff) has the same information, and GitHub's "Cite this
+repository" button uses it.
 
 ## Contributing and security
 
