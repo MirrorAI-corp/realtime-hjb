@@ -335,21 +335,23 @@ static void writeFrame(const fs::path& path, double t,
     of.write(reinterpret_cast<const char*>(&F),   4);
     of.write(reinterpret_cast<const char*>(&t),   8);
 
+    const std::size_t n = std::size_t(Nx) * std::size_t(Ny);
+
     // Labels as uint8 (max 254 agents, 0xFF = unlabeled).
-    std::vector<std::uint8_t> lab8(Nx * Ny);
-    for (int i = 0; i < Nx * Ny; ++i) {
+    std::vector<std::uint8_t> lab8(n);
+    for (std::size_t i = 0; i < n; ++i) {
         lab8[i] = (labels[i] == hjb::kVoronoiLabelInvalid)
                   ? 0xFFu : std::uint8_t(labels[i]);
     }
-    of.write(reinterpret_cast<const char*>(lab8.data()), Nx * Ny);
+    of.write(reinterpret_cast<const char*>(lab8.data()), std::streamsize(n));
 
-    std::vector<float> fx32(Nx * Ny), fy32(Nx * Ny);
-    for (int i = 0; i < Nx * Ny; ++i) {
-        fx32[i] = float(fx[i]);
-        fy32[i] = float(fy[i]);
+    std::vector<float> fx32(n), fy32(n);
+    for (std::size_t i = 0; i < n; ++i) {
+        fx32[i] = float(fx[int(i)]);
+        fy32[i] = float(fy[int(i)]);
     }
-    of.write(reinterpret_cast<const char*>(fx32.data()), Nx * Ny * 4);
-    of.write(reinterpret_cast<const char*>(fy32.data()), Nx * Ny * 4);
+    of.write(reinterpret_cast<const char*>(fx32.data()), std::streamsize(n * sizeof(float)));
+    of.write(reinterpret_cast<const char*>(fy32.data()), std::streamsize(n * sizeof(float)));
 
     for (const auto& d : drones) {
         of.write(reinterpret_cast<const char*>(&d.x), 8);

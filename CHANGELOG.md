@@ -3,6 +3,16 @@
 Versions follow [Semantic Versioning](https://semver.org/). Until 1.0 the API
 can change between minor versions.
 
+## [Unreleased]
+
+- The paper is on arXiv: [arXiv:2611.04096](https://arxiv.org/abs/2611.04096).
+  The README has the citation and BibTeX; `CITATION.cff` enables GitHub's
+  "Cite this repository".
+- The library builds without compiler warnings: `Grid`'s methods are host-only
+  and no longer marked `__host__ __device__`.
+- `fleet_sim` computes frame sizes in `size_t`, so very large grids cannot
+  overflow `int` (its output is unchanged).
+
 ## [0.1.1] - 2026-10-27
 
 - `examples/wildfire/plot_frame.py` draws `fleet_sim` frames; the frame layout

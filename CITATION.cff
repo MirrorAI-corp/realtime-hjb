@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use RealtimeHJB in your research, please cite the paper below."
+title: RealtimeHJB
+abstract: >-
+  CUDA library for Hamilton-Jacobi reachability on a grid: backward reachable
+  tubes and minimum time-to-reach maps for 2D, 3D and 4D systems in
+  milliseconds on one GPU.
+type: software
+authors:
+  - given-names: Kevin
+    family-names: Weekly
+    affiliation: "Mirror AI, Corp."
+license: Apache-2.0
+repository-code: "https://github.com/MirrorAI-corp/realtime-hjb"
+version: 0.1.1
+date-released: 2026-10-27
+keywords:
+  - Hamilton-Jacobi reachability
+  - CUDA
+  - GPU
+  - robotics
+  - safety
+preferred-citation:
+  type: article
+  title: >-
+    Online Hamilton-Jacobi Reachability Onboard the Robot Control Loop:
+    A Real-Time GPU Solver for Safety-Critical Autonomy
+  authors:
+    - given-names: Kevin
+      family-names: Weekly
+      affiliation: "Mirror AI"
+    - given-names: Alexandre M.
+      family-names: Bayen
+      affiliation: "University of California, Berkeley"
+  year: 2026
+  journal: arXiv preprint
+  identifiers:
+    - type: other
+      value: "arXiv:2611.04096"
+      description: arXiv identifier
+  url: "https://arxiv.org/abs/2611.04096"

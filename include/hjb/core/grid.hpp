@@ -33,25 +33,25 @@ struct Grid {
                        const std::array<BoundaryType, kMaxDim>& gbdry);
 
     /// Flat index from multi-index (row-major: last dimension varies fastest)
-    HJB_HD int flatIndex(const int* idx) const;
+    int flatIndex(const int* idx) const;
 
     /// Multi-index from flat index
-    HJB_HD void unflatIndex(int flat, int* idx) const;
+    void unflatIndex(int flat, int* idx) const;
 
     /// 2D specialization
-    HJB_HD int flatIndex2D(int i, int j) const { return i * N[1] + j; }
-    HJB_HD void unflatIndex2D(int flat, int& i, int& j) const {
+    int flatIndex2D(int i, int j) const { return i * N[1] + j; }
+    void unflatIndex2D(int flat, int& i, int& j) const {
         i = flat / N[1];
         j = flat % N[1];
     }
 
     /// 3D specialization
-    HJB_HD int flatIndex3D(int i, int j, int k) const {
+    int flatIndex3D(int i, int j, int k) const {
         return (i * N[1] + j) * N[2] + k;
     }
 
     /// Coordinate value along dimension d at grid index i
-    HJB_HD double coord(int d, int i) const {
+    double coord(int d, int i) const {
         return min[d] + i * dx[d];
     }
 };
