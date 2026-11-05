@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/hero.jpg" alt="A firefighting quadcopter, dispatched by RealtimeHJB, sprays water on a spot fire in dry grassland" width="100%">
+</p>
+
 # RealtimeHJB
 
 [![CI](https://github.com/MirrorAI-corp/realtime-hjb/actions/workflows/ci.yml/badge.svg)](https://github.com/MirrorAI-corp/realtime-hjb/actions/workflows/ci.yml)
@@ -11,6 +15,75 @@ RealtimeHJB is a CUDA library for Hamilton-Jacobi reachability on a grid. It
 computes backward reachable tubes and minimum time-to-reach maps for 2D, 3D
 and 4D systems in milliseconds on one GPU, fast enough to recompute them inside
 a robot's control loop.
+
+## What it solves
+
+### In practice
+
+A robot often needs to know, right now, what can happen over the next few
+seconds or minutes, given how it moves and what the wind, the terrain or
+another agent might do. RealtimeHJB answers that kind of question:
+
+- **Collision avoidance.** From which relative positions and headings can
+  another aircraft, drone or vehicle force a collision within T seconds,
+  whatever you do? Staying outside that set keeps you safe for the whole
+  horizon, and its boundary tells a safety filter when to override the
+  nominal controller.
+- **Reaching a goal despite disturbances.** How fast can a vehicle reach a
+  target from every starting state when wind or current pushes it around, and
+  from where is arrival guaranteed at all?
+- **Dispatch.** With several vehicles, which one gets to each point first? In
+  a strong wind it is often not the nearest one: a drone upwind can beat a
+  closer drone that has to fly into a headwind.
+- **Pursuit and interception.** Where can a pursuer catch an evader in the
+  plane, with walls and position-dependent speed limits.
+
+One solve takes milliseconds, so these answers can be recomputed every control
+cycle as the wind, the obstacles or the other agents change, instead of being
+computed offline for one fixed scenario.
+
+### Mathematically
+
+For a system $\dot x = f(x, u, d)$ with a bounded control $u$, a bounded
+disturbance $d$ and a target set $\mathcal T = \lbrace x : V_0(x) \le 0 \rbrace$,
+RealtimeHJB solves the Hamilton-Jacobi-Isaacs equation on a grid, in
+time-to-go $t \in [0, T]$:
+
+```math
+\frac{\partial V}{\partial t} = \min\bigl\{0,\ H(x, \nabla V)\bigr\},
+\qquad
+H(x, p) = \min_{u} \max_{d}\ p \cdot f(x, u, d),
+\qquad
+V(x, 0) = V_0(x).
+```
+
+For avoid problems the control and the disturbance swap roles. From the
+solution it returns:
+
+- the **backward reachable tube** $\lbrace x : V(x, T) \le 0 \rbrace$: every state from
+  which the target can be reached within $T$ against the worst-case
+  disturbance (for avoid problems, from which the disturbance can force entry
+  into the unsafe set);
+- the **minimum time-to-reach** $T^\ast(x) = \min\lbrace t \le T : V(x, t) \le 0 \rbrace$
+  of every cell;
+- for $K$ agents, the **capture-basin partition**
+  $\ell(x) = \arg\min_k T_k^\ast(x)$, the agent that reaches each cell first,
+  from a single solve rather than $K$;
+- **reach-avoid** values, when obstacles are given as constraints.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/problems-dark.png">
+  <img src="docs/images/problems-light.png" alt="Three solver outputs: the Air3D unsafe set for a head-on intruder, a time-to-reach map in a wind field, and a six-drone capture-basin partition in a gusty wind">
+</picture>
+
+<sub>Output of three of the examples, drawn by
+[docs/images/make_readme_figure.py](docs/images/make_readme_figure.py). Left:
+relative positions from which a head-on intruder can force a collision within
+2 s. Middle: time to reach a target with the wind blowing to the right; starting
+upwind is faster. Right: six drones in a 20 km gusty wind field, each colour the
+area that drone reaches first. Times are on an RTX 4000 Ada in FP32.</sub>
+
+## How it works
 
 It uses the standard level-set scheme of Mitchell's ToolboxLS and the JAX
 library [hj_reachability](https://github.com/StanfordASL/hj_reachability):
